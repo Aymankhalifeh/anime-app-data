@@ -1,0 +1,201 @@
+{
+  "_comment": [
+    "Prices the robot cannot read by itself: services with no public pricing page",
+    "(Shahid, OSN+, STARZPLAY, Prime Video).",
+    "Fill in what you know - leave the rest empty, an empty service is simply skipped",
+    "and listed under needs_check instead of being guessed.",
+    "",
+    "price   = what you pay per period, in the country's own currency",
+    "period  = \"month\" or \"year\"  (a year is divided by 12 for the sorting)",
+    "checked = the day you looked at the price. The app shows it.",
+    "lock    = true keeps the weekly job from ever overwriting this entry."
+  ],
+  "_example": {
+    "SA": {
+      "shahid": {
+        "checked": "2026-10-30",
+        "plans": [
+          {
+            "plan": "VIP Mobile",
+            "price": 19,
+            "period": "month"
+          },
+          {
+            "plan": "VIP",
+            "price": 46,
+            "period": "month"
+          }
+        ]
+      }
+    }
+  },
+  "countries": {
+    "SA": {
+      "shahid": {
+        "checked": null,
+        "plans": []
+      },
+      "osnplus": {
+        "checked": null,
+        "plans": []
+      },
+      "starzplay": {
+        "checked": null,
+        "plans": []
+      },
+      "primevideo": {
+        "checked": null,
+        "plans": []
+      },
+      "crunchyroll": {
+        "checked": "2026-10-31",
+        "plans": [
+          {
+            "plan": "Fan",
+            "price": 8.99,
+            "period": "month"
+          },
+          {
+            "plan": "Mega Fan",
+            "price": 11.99,
+            "period": "month"
+          }
+        ],
+        "currency": "EUR",
+        "lock": true
+      }
+    },
+    "AE": {
+      "shahid": {
+        "checked": null,
+        "plans": []
+      },
+      "osnplus": {
+        "checked": null,
+        "plans": []
+      },
+      "starzplay": {
+        "checked": null,
+        "plans": []
+      },
+      "primevideo": {
+        "checked": null,
+        "plans": []
+      },
+      "crunchyroll": {
+        "checked": "2026-10-31",
+        "plans": [
+          {
+            "plan": "Fan",
+            "price": 8.99,
+            "period": "month"
+          },
+          {
+            "plan": "Mega Fan",
+            "price": 11.99,
+            "period": "month"
+          }
+        ],
+        "currency": "EUR",
+        "lock": true
+      }
+    },
+    "EG": {
+      "shahid": {
+        "checked": null,
+        "plans": []
+      },
+      "osnplus": {
+        "checked": "2026-10-31",
+        "plans": [
+          {
+            "plan": "Standard with ads",
+            "price": 1.99,
+            "period": "month"
+          },
+          {
+            "plan": "Standard",
+            "price": 3.49,
+            "period": "month"
+          },
+          {
+            "plan": "Premium",
+            "price": 4.99,
+            "period": "month"
+          }
+        ],
+        "currency": "USD",
+        "lock": true
+      },
+      "starzplay": {
+        "checked": null,
+        "plans": []
+      },
+      "primevideo": {
+        "checked": null,
+        "plans": []
+      },
+      "crunchyroll": {
+        "checked": "2026-10-31",
+        "plans": [
+          {
+            "plan": "Fan",
+            "price": 8.99,
+            "period": "month"
+          },
+          {
+            "plan": "Mega Fan",
+            "price": 11.99,
+            "period": "month"
+          }
+        ],
+        "currency": "EUR",
+        "lock": true
+      }
+    },
+    "DE": {
+      "primevideo": {
+        "checked": "2026-10-31",
+        "plans": [
+          {
+            "plan": "Prime",
+            "price": 8.99,
+            "period": "month"
+          }
+        ]
+      },
+      "hidive": {
+        "checked": null,
+        "plans": []
+      },
+      "max": {
+        "checked": null,
+        "plans": []
+      }
+    },
+    "US": {
+      "hulu": {
+        "checked": null,
+        "plans": []
+      },
+      "hidive": {
+        "checked": null,
+        "plans": []
+      },
+      "max": {
+        "checked": null,
+        "plans": []
+      },
+      "primevideo": {
+        "checked": "2026-10-31",
+        "plans": [
+          {
+            "plan": "Prime",
+            "price": 14.99,
+            "period": "month"
+          }
+        ]
+      }
+    }
+  }
+}

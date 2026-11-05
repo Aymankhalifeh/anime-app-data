@@ -1,0 +1,43 @@
+name: Update app data
+
+on:
+  schedule:
+    - cron: '17 2 * * *' # every night, 02:17 UTC (03:17 / 04:17 in Germany)
+  workflow_dispatch: # "Run workflow" button for a manual update
+
+permissions:
+  contents: write # lets the job commit the new data files
+
+concurrency:
+  group: anime-data # shared by all data jobs, so they never write at the same time
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Build data
+        run: node scripts/build.mjs
+        env:
+          # Optional. Without it, rankings still update; only new Arabic stories wait.
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
+      - name: Commit if something changed
+        run: |
+          git config user.name "anime-data-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data
+          if git diff --cached --quiet; then
+            echo "No changes."
+          else
+            git commit -m "Data update $(date -u +%F)"
+            git pull --rebase
+            git push
+          fi

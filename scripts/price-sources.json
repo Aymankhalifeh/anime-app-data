@@ -1,0 +1,238 @@
+{
+  "_comment": "Where the weekly price job looks, and what it is allowed to believe. Edit by hand.",
+  "countries": {
+    "SA": {
+      "currency": "SAR",
+      "name": "Saudi Arabia",
+      "nameAr": "السعودية",
+      "lang": "en"
+    },
+    "AE": {
+      "currency": "AED",
+      "name": "United Arab Emirates",
+      "nameAr": "الإمارات",
+      "lang": "en"
+    },
+    "EG": {
+      "currency": "EGP",
+      "name": "Egypt",
+      "nameAr": "مصر",
+      "lang": "en"
+    },
+    "DE": {
+      "currency": "EUR",
+      "name": "Germany",
+      "nameAr": "ألمانيا",
+      "lang": "de"
+    },
+    "US": {
+      "currency": "USD",
+      "name": "United States",
+      "nameAr": "الولايات المتحدة",
+      "lang": "en"
+    }
+  },
+  "services": [
+    {
+      "id": "netflix",
+      "name": "Netflix",
+      "site": "https://www.netflix.com/",
+      "anime": "some",
+      "countries": [
+        "SA",
+        "AE",
+        "EG",
+        "DE",
+        "US"
+      ],
+      "scrape": {
+        "url": "https://help.netflix.com/en/node/24926",
+        "lang": "en",
+        "strategy": "labelled",
+        "expectCountryName": true,
+        "maxPlans": 4
+      },
+      "color": "#E50914",
+      "icon": "https://assets.nflxext.com/en_us/layout/ecweb/netflix-app-icon_152.jpg"
+    },
+    {
+      "id": "crunchyroll",
+      "name": "Crunchyroll",
+      "site": "https://www.crunchyroll.com/",
+      "anime": "most",
+      "countries": [
+        "SA",
+        "AE",
+        "EG",
+        "DE",
+        "US"
+      ],
+      "scrape": {
+        "url": "https://www.crunchyroll.com/premium",
+        "lang": "en",
+        "strategy": "amounts",
+        "plans": [
+          "Fan",
+          "Mega Fan",
+          "Ultimate Fan"
+        ],
+        "maxPlans": 3,
+        "note": "shows promo prices and sometimes EUR outside Europe - the currency check catches that"
+      },
+      "color": "#F47521",
+      "icon": "https://static.crunchyroll.com/cr-acquisition/assets/img/favicons/favicon-16x16.png"
+    },
+    {
+      "id": "disneyplus",
+      "name": "Disney+",
+      "site": "https://www.disneyplus.com/",
+      "anime": "few",
+      "countries": [
+        "SA",
+        "AE",
+        "DE",
+        "US"
+      ],
+      "scrape": {
+        "url": "https://www.disneyplus.com/",
+        "localeUrl": {
+          "DE": "https://www.disneyplus.com/de-de",
+          "SA": "https://www.disneyplus.com/en-sa",
+          "AE": "https://www.disneyplus.com/en-ae"
+        },
+        "strategy": "amounts",
+        "plans": [
+          "Standard with ads",
+          "Standard",
+          "Premium"
+        ],
+        "maxPlans": 3,
+        "monthlyOnly": true,
+        "plansByCountry": {
+          "SA": [
+            "Standard"
+          ],
+          "AE": [
+            "Standard"
+          ]
+        }
+      },
+      "color": "#113CCF",
+      "icon": "https://static-assets.bamgrid.com/product/disneyplus/favicons/favicon_dis_48x48_@2X.2eebc912779d4f2ee8d9c6204d443ab6.png",
+      "note": "not available in Egypt (the site answers \"not available in your region\")"
+    },
+    {
+      "id": "primevideo",
+      "name": "Prime Video",
+      "site": "https://www.primevideo.com/",
+      "anime": "some",
+      "countries": [
+        "SA",
+        "AE",
+        "EG",
+        "DE",
+        "US"
+      ],
+      "manualOnly": true,
+      "note": "price sits behind the Amazon sign-up flow - fill it in price-manual.json",
+      "color": "#00A8E1",
+      "icon": "https://m.media-amazon.com/images/G/01/digital/video/DVUI/favicons/mstile-144x144.png"
+    },
+    {
+      "id": "shahid",
+      "name": "Shahid",
+      "site": "https://shahid.mbc.net/",
+      "anime": "few",
+      "countries": [
+        "SA",
+        "AE",
+        "EG"
+      ],
+      "manualOnly": true,
+      "note": "no public pricing page (404) - fill it in price-manual.json",
+      "color": "#00CC99",
+      "icon": "https://shahid.mbc.net/staticFiles/production/favicon-16.png"
+    },
+    {
+      "id": "osnplus",
+      "name": "OSN+",
+      "site": "https://www.osnplus.com/",
+      "anime": "few",
+      "countries": [
+        "SA",
+        "AE",
+        "EG"
+      ],
+      "color": "#000000",
+      "scrape": {
+        "url": "https://www.osnplus.com/en-ae/subscribe",
+        "localeUrl": {
+          "SA": "https://www.osnplus.com/en-sa/subscribe",
+          "AE": "https://www.osnplus.com/en-ae/subscribe",
+          "EG": "https://www.osnplus.com/en-eg/subscribe"
+        },
+        "lang": "en",
+        "strategy": "amounts",
+        "plans": [
+          "Standard",
+          "Premium"
+        ],
+        "maxPlans": 3,
+        "monthlyOnly": true
+      },
+      "note": "Egypt is billed in USD, so the weekly check there needs the manual entry"
+    },
+    {
+      "id": "starzplay",
+      "name": "STARZPLAY",
+      "site": "https://www.starzplay.com/",
+      "anime": "few",
+      "countries": [
+        "SA",
+        "AE",
+        "EG"
+      ],
+      "manualOnly": true,
+      "color": "#111111"
+    },
+    {
+      "id": "hulu",
+      "name": "Hulu",
+      "site": "https://www.hulu.com/",
+      "anime": "some",
+      "countries": [
+        "US"
+      ],
+      "manualOnly": true,
+      "note": "pricing page redirects to the login - fill it in price-manual.json",
+      "color": "#1CE783",
+      "icon": "https://assetshuluimcom-a.akamaihd.net/h3o/icons/favicon.ico.png"
+    },
+    {
+      "id": "hidive",
+      "name": "HIDIVE",
+      "site": "https://www.hidive.com/",
+      "anime": "most",
+      "countries": [
+        "US",
+        "DE"
+      ],
+      "manualOnly": true,
+      "note": "blocks automated access - fill it in price-manual.json",
+      "color": "#00AEEF"
+    },
+    {
+      "id": "max",
+      "name": "Max",
+      "site": "https://www.max.com/",
+      "anime": "few",
+      "countries": [
+        "US",
+        "DE"
+      ],
+      "manualOnly": true,
+      "color": "#002BE7"
+    }
+  ],
+  "_icons_comment": "icon/color are used for the little logo tile in the app. The icon URLs are the services' own favicons/app icons; colors are the brand colors (approximate) and are also used when a service has no usable icon."
+}

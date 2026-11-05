@@ -1,0 +1,44 @@
+name: Update prices
+
+on:
+  schedule:
+    - cron: '41 3 * * 0' # Sundays, 03:41 UTC - prices change slowly, once a week is plenty
+  workflow_dispatch: # "Run workflow" button for a manual check
+
+permissions:
+  contents: write
+
+concurrency:
+  group: anime-data # shared by all data jobs, so they never write at the same time
+  cancel-in-progress: false
+
+jobs:
+  prices:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check prices
+        run: node scripts/prices.mjs
+        env:
+          # Without this the pages come from GitHub's own country, the currency
+          # check rejects them and last week's prices are kept. Free tier is enough.
+          FIRECRAWL_API_KEY: ${{ secrets.FIRECRAWL_API_KEY }}
+
+      - name: Commit if something changed
+        run: |
+          git config user.name "anime-data-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data
+          if git diff --cached --quiet; then
+            echo "No price changes."
+          else
+            git commit -m "Price update $(date -u +%F)"
+            git pull --rebase
+            git push
+          fi

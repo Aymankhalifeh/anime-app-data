@@ -1,0 +1,6 @@
+# Secrets never go into git: the job reads them from GitHub's secrets
+.env
+*.env
+node_modules/
+.DS_Store
+Thumbs.db

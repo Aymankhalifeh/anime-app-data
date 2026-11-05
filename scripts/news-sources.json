@@ -1,0 +1,10 @@
+[
+  {
+    "id": "ann",
+    "name": "Anime News Network",
+    "feed": "https://www.animenewsnetwork.com/news/rss.xml?ann-edition=w",
+    "home": "https://www.animenewsnetwork.com",
+    "credit": "News provided by Anime News Network",
+    "categories": ["anime"]
+  }
+]
