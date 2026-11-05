@@ -54,7 +54,7 @@ async function readJson(url, fallback) {
 
 let lastRequest = 0;
 async function anilist(name, query, variables = {}) {
-  if (FIXTURES) return (await readJson(new URL(`anilist-${name}.json`, `file://${FIXTURES}/`), null))?.data;
+  if (FIXTURES) return (await readJson(new URL(`anilist-${name}.json`, `file://${FIXTURES}/`), null))?.data ?? null;
   for (let attempt = 1; attempt <= 5; attempt++) {
     const wait = lastRequest + GAP_MS - Date.now();
     if (wait > 0) await sleep(wait);
@@ -256,6 +256,92 @@ async function feedNews(sources) {
 }
 
 // ---------------------------------------------------------------------------
+// Which anime is a headline about? (poster + link to the anime in the app)
+
+const MAX_MATCHES_PER_RUN = 10;
+const norm = (s) =>
+  s.toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
+
+/**
+ * Likely anime names in a news headline, best guess first. News sites write
+ * "<Name> Anime Reveals …", "<Name> Season 3 Anime's …",
+ * "Crunchyroll to Stream <Name> Anime …", "… English Dub of <Name> Anime".
+ */
+export function titleCandidates(headline) {
+  const out = [];
+  const add = (s) => {
+    const t = s
+      .replace(/['’]s$/i, '')
+      .replace(/\s+(?:Season|Part|Cour)\s+\d+$/i, '')
+      .replace(/^(?:The\s+)?(?:New|Original|Live-Action)\s+/i, '')
+      .trim();
+    if (t.length >= 3 && !out.includes(t)) out.push(t);
+  };
+  // "<Author>'s <Name> Manga Gets TV Anime": the name sits before "Manga".
+  const source = headline.match(/^(?:.+?['’]s\s+)?(.+?)\s+(?:Manga|Light Novel|Novel|Game)\s+Gets\b/i)?.[1];
+  if (source) {
+    add(source);
+    return out;
+  }
+  const before = headline.match(/^(.+?)(?:['’]s)?\s+(?:TV\s+|Film\s+|Movie\s+)?Anime\b/i)?.[1];
+  if (before) {
+    // Drop "Crunchyroll to Stream", "OceanVeil Streams English Dub of", "HIDIVE Adds" …
+    // (greedy: the last of these words wins, so "Streams English Dub of" goes as a whole)
+    const lead = before.match(
+      /^.*\b(?:Streams?|to Stream|Adds|Licenses|Announces|Dub of|Simulcast of|Premieres)\s+(.+)$/i,
+    )?.[1];
+    if (lead) add(lead);
+    add(before);
+  }
+  return out.slice(0, 2);
+}
+
+const SEARCH = `query ($q: String) {
+  Page(perPage: 5) {
+    media(search: $q, type: ANIME, sort: SEARCH_MATCH, isAdult: false) {
+      id title { romaji english } synonyms coverImage { large color }
+    }
+  }
+}`;
+
+/** The AniList entry whose name really is the candidate (not a fuzzy guess). */
+function pick(candidate, media) {
+  const want = norm(candidate);
+  const namesOf = (m) =>
+    [m.title?.english, m.title?.romaji, ...(m.synonyms ?? [])].filter(Boolean).map(norm);
+  // Exact name first (the series itself), then "starts with" (e.g. "Code Geass" → "Code Geass: …").
+  return (
+    media.find((m) => namesOf(m).includes(want)) ??
+    (want.length >= 6 ? media.find((m) => namesOf(m).some((n) => n.startsWith(want))) : undefined) ??
+    null
+  );
+}
+
+async function matchHeadlines(items) {
+  const todo = items.filter((i) => i.kind === 'feed' && !i.matched).slice(0, MAX_MATCHES_PER_RUN);
+  let found = 0;
+  for (const item of todo) {
+    item.matched = true; // tried; don't search again next hour
+    for (const candidate of titleCandidates(item.headline)) {
+      const name = `search-${norm(candidate).replace(/ /g, '-')}`;
+      const media = (await anilist(name, SEARCH, { q: candidate }))?.Page?.media ?? [];
+      const m = pick(candidate, media);
+      if (m) {
+        Object.assign(item, {
+          mediaId: m.id,
+          title: m.title?.english || m.title?.romaji,
+          cover: m.coverImage?.large ?? undefined,
+          color: m.coverImage?.color ?? undefined,
+        });
+        found++;
+        break;
+      }
+    }
+  }
+  if (todo.length) log(`posters: ${found} of ${todo.length} headlines matched to an anime`);
+}
+
+// ---------------------------------------------------------------------------
 // Arabic summaries
 
 const NEWS_STYLE = `You write very short Arabic news summaries for an Arabic anime app.
@@ -322,13 +408,24 @@ async function main() {
   const byId = new Map(previous.items.map((i) => [i.id, i]));
   for (const item of fresh) {
     const old = byId.get(item.id);
-    byId.set(item.id, old ? { ...item, time: old.time, ar: old.ar } : item);
+    // Keep what earlier runs added: the time first seen, the summary, the poster.
+    const kept = old
+      ? { time: old.time, ar: old.ar, matched: old.matched, mediaId: old.mediaId, title: old.title, cover: old.cover, color: old.color }
+      : {};
+    byId.set(item.id, { ...item, ...kept });
   }
   const cutoff = Date.now() - KEEP_DAYS * 86400000;
   let items = [...byId.values()]
     .filter((i) => new Date(i.time).getTime() >= cutoff)
     .sort((a, b) => b.time.localeCompare(a.time))
     .slice(0, MAX_ITEMS);
+
+  // Posters: find the anime a headline is about (a few new headlines per run).
+  try {
+    await matchHeadlines(items);
+  } catch (e) {
+    log(`poster matching skipped (${e.message})`);
+  }
 
   // Arabic summaries for feed news that has none yet (newest first).
   const todo = items.filter((i) => i.kind === 'feed' && !i.ar && i._teaser !== undefined);
@@ -344,7 +441,7 @@ async function main() {
   } else if (todo.length) {
     log(`summaries: no ANTHROPIC_API_KEY, ${todo.length} items stay English for now`);
   }
-  items = items.map(({ _teaser, ...rest }) => rest);
+  items = items.map(({ _teaser, ...rest }) => rest); // `matched` stays: it saves searches next hour
 
   const out = {
     v: 1,
