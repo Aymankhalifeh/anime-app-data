@@ -22,6 +22,7 @@
 
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
+import { pathToFileURL } from 'node:url';
 
 const DATA_DIR = new URL('../data/', import.meta.url);
 const SCRIPT_DIR = new URL('./', import.meta.url);
@@ -305,7 +306,7 @@ const SEARCH = `query ($q: String) {
 }`;
 
 /** The AniList entry whose name really is the candidate (not a fuzzy guess). */
-function pick(candidate, media) {
+export function pick(candidate, media) {
   const want = norm(candidate);
   const namesOf = (m) =>
     [m.title?.english, m.title?.romaji, ...(m.synonyms ?? [])].filter(Boolean).map(norm);
@@ -471,7 +472,11 @@ async function main() {
   log(`news.json: ${items.length} items (${Buffer.byteLength(text)} bytes)`);
 }
 
-main().catch((e) => {
-  console.error(e);
-  process.exit(1);
-});
+// Run only when started as a script (node scripts/news.mjs), not when a test
+// imports it to check single functions.
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main().catch((e) => {
+    console.error(e);
+    process.exit(1);
+  });
+}
