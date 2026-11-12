@@ -1,14 +1,14 @@
 {
  "files": {
   "top_anime.json": {
-   "sha": "e4a3d50830db13fe",
+   "sha": "02b30a485497cd93",
    "updated": "2026-11-12",
-   "bytes": 36195
+   "bytes": 36193
   },
   "synopsis_ar.json": {
-   "sha": "ea60d5d0ef418ca1",
-   "updated": "2026-10-30",
-   "bytes": 44400
+   "sha": "b2ad00991c96ae98",
+   "updated": "2026-11-12",
+   "bytes": 55329
   },
   "prices.json": {
    "sha": "cae72726c85e29ef",
@@ -21,5 +21,5 @@
    "bytes": 25923
   }
  },
- "checked": "2026-11-12T09:59:06.911Z"
+ "checked": "2026-11-12T20:21:42.372Z"
 }
