@@ -1,9 +1,9 @@
 {
  "files": {
   "top_anime.json": {
-   "sha": "50fc23228f55c57e",
-   "updated": "2026-11-25",
-   "bytes": 36089
+   "sha": "25f6417fd21cc0c1",
+   "updated": "2026-11-26",
+   "bytes": 36051
   },
   "synopsis_ar.json": {
    "sha": "b2ad00991c96ae98",
@@ -21,5 +21,5 @@
    "bytes": 32756
   }
  },
- "checked": "2026-11-25T11:37:43.171Z"
+ "checked": "2026-11-26T11:12:22.538Z"
 }
